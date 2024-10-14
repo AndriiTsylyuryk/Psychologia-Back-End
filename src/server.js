@@ -6,6 +6,7 @@ import { env } from './utils/env.js';
 import router from './routers/index.js';
 import { notFoundHandler } from './middlewares/notFoundHandler.js';
 import { errorHandler } from './middlewares/errorHandler.js';
+import cookieParser from 'cookie-parser';
 
 dotenv.config();
 
@@ -18,6 +19,8 @@ export const startServer = () => {
 
   app.use(cors());
 
+  app.use(cookieParser());
+  
   app.use(
     pino({
       transport: {
