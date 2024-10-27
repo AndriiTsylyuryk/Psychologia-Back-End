@@ -9,17 +9,20 @@ import { google } from "googleapis";
 
 const router = Router();
 
-const PATH_JSON = path.join(process.cwd(), 'google-oauth.json');
-const oauthConfig = JSON.parse(await readFile(PATH_JSON));
+const credentials = env('GOOGLE_CALENDAR_API_KEY');
+const calendarId = env("GOOGLE_CALENDAR_ID");
+const subjectEmail = env('SUBJECT_EMAIL');
 
-const googleOAuthClient = new OAuth2Client({
-    clientId: env('GOOGLE_AUTH_CLIENT_ID'),
-    clientSecret: env('GOOGLE_AUTH_CLIENT_SECRET'),
-    redirectUri: oauthConfig.web.redirect_uris[0],
-  });
+const auth = new google.auth.JWT(
+    credentials.client_email,
+    null,
+    credentials.private_key,
+    ["https://www.googleapis.com/auth/calendar.events"],
+    subjectEmail,
+  );
 
-
-const calendar = google.calendar({ version: "v3", auth: googleOAuthClient });
+  
+const calendar = google.calendar({ version: "v3", auth });
 
 router.post("/event", async (req, res) => {
    const {start, end, title} = req.body;
@@ -29,10 +32,14 @@ router.post("/event", async (req, res) => {
     end: { dateTime: end, timeZone: "Europe/Kyiv" },
     status: "tentative", 
   };
+
   try {
      calendar.events.insert({
-      calendarId: "navigator.tsylyuryk@gmail.com", 
-      resource: event,
+        auth,
+        calendarId,
+        requestBody: event,
+        conferenceDataVersion: 1, 
+        sendNotifications: true,
     });
     res.status(200).send("Подія успішно створена!");
   } catch (error) {
