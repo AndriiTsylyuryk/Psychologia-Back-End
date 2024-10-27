@@ -3,7 +3,7 @@ import { OAuth2Client } from 'google-auth-library';
 import { readFile } from 'fs/promises';
 import path from "path";
 import { env } from "../utils/env.js";
-const { google } = require("googleapis"); 
+import { google } from "googleapis";
 
 
 
