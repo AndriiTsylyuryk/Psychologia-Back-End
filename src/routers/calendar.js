@@ -16,7 +16,7 @@ const subjectEmail = env('SUBJECT_EMAIL');
 const auth = new google.auth.JWT(
     env('CLIENT_EMAIL'),
     null,
-    env('CALENDAR_PRIVATE_KEY'),
+    env('CALENDAR_PRIVATE_KEY').replace(/\\n/g, '\n'),
     ["https://www.googleapis.com/auth/calendar.events"],
     subjectEmail,
   );
