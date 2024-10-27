@@ -14,9 +14,9 @@ const calendarId = env("GOOGLE_CALENDAR_ID");
 const subjectEmail = env('SUBJECT_EMAIL');
 
 const auth = new google.auth.JWT(
-    credentials.client_email,
+    env('CLIENT_EMAIL'),
     null,
-    credentials.private_key,
+    env('CALENDAR_PRIVATE_KEY'),
     ["https://www.googleapis.com/auth/calendar.events"],
     subjectEmail,
   );
@@ -34,7 +34,7 @@ router.post("/event", async (req, res) => {
   };
 
   try {
-     calendar.events.insert({
+     await calendar.events.insert({
         auth,
         calendarId,
         requestBody: event,
