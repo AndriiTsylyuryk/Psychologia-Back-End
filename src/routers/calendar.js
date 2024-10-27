@@ -29,7 +29,6 @@ router.post("/event", async (req, res) => {
     end: { dateTime: end, timeZone: "Europe/Kyiv" },
     status: "tentative", 
   };
-
   try {
      calendar.events.insert({
       calendarId: "navigator.tsylyuryk@gmail.com", 
@@ -40,12 +39,6 @@ router.post("/event", async (req, res) => {
     console.error("Помилка при створенні події:", error);
     res.status(500).send("Не вдалося створити подію.");
   }
-});
-
-
-
-
-
 });
 
 export default router;
