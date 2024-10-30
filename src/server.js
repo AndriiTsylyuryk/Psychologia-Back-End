@@ -35,7 +35,7 @@ export const startServer = () => {
 
     if (token) {
       try {
-        const decoded = jwt.verify(token, 'your_secret_key'); // Верифікуємо токен
+        const decoded = jwt.verify(token, env('JWT_SECRET')); // Верифікуємо токен
         const userEmail = decoded.email; // Отримуємо емейл з декодованого токена
 
         res.json({
