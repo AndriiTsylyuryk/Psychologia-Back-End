@@ -31,16 +31,16 @@ export const startServer = () => {
   );
 
   app.get('/', (req, res) => {
-    const token = req.headers.authorization?.split(' ')[1]; // Отримуємо токен з заголовка
-
+    const token = req.headers.authorization?.split(' ')[1]; 
+    console.log(token);
     if (token) {
       try {
-        const decoded = jwt.verify(token, env('JWT_SECRET')); // Верифікуємо токен
-        const userEmail = decoded.email; // Отримуємо емейл з декодованого токена
+        const decoded = jwt.verify(token, env('JWT_SECRET')); 
+        const userEmail = decoded.email; 
 
         res.json({
           message: 'Hello world!',
-          email: userEmail, // Повертаємо емейл користувача
+          email: userEmail,
         });
       } catch (error) {
         res.status(401).json({ message: 'Invalid token' });
