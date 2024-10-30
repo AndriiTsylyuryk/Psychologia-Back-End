@@ -1,8 +1,8 @@
 import { ONE_DAY } from '../constants/index.js';
-import {refreshUsersSession, 
+import {
+  refreshUsersSession,
   loginUser,
   logoutUser,
- 
   registerUser,
   requestResetToken,
   resetPassword,
@@ -35,9 +35,11 @@ export const loginUserController = async (req, res) => {
 
   res.json({
     status: 200,
+
     message: 'Successfully logged in an user!',
     data: {
       accessToken: session.accessToken,
+      email: req.body.email,
     },
   });
 };
@@ -81,8 +83,6 @@ export const refreshUserSessionController = async (req, res) => {
   });
 };
 
-
-
 export const requestResetEmailController = async (req, res) => {
   await requestResetToken(req.body.email);
   res.json({
@@ -101,7 +101,6 @@ export const resetPasswordController = async (req, res) => {
   });
 };
 
-
 export const getGoogleOAuthUrlController = async (req, res) => {
   const url = generateAuthUrl();
   res.json({
@@ -112,7 +111,6 @@ export const getGoogleOAuthUrlController = async (req, res) => {
     },
   });
 };
-
 
 export const loginWithGoogleController = async (req, res) => {
   const session = await loginOrSignupWithGoogle(req.body.code);
