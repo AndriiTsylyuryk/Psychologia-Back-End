@@ -7,7 +7,6 @@ import router from './routers/index.js';
 import { notFoundHandler } from './middlewares/notFoundHandler.js';
 import { errorHandler } from './middlewares/errorHandler.js';
 import cookieParser from 'cookie-parser';
-import jwt from 'jsonwebtoken';
 
 dotenv.config();
 
@@ -31,23 +30,9 @@ export const startServer = () => {
   );
 
   app.get('/', (req, res) => {
-    const token = req.headers.authorization?.split(' ')[1]; 
-    console.log(token);
-    if (token) {
-      try {
-        const decoded = jwt.verify(token, env('JWT_SECRET')); 
-        const userEmail = decoded.email; 
-
-        res.json({
-          message: 'Hello world!',
-          email: userEmail,
-        });
-      } catch (error) {
-        res.status(401).json({ message: 'Invalid token' });
-      }
-    } else {
-      res.status(401).json({ message: 'No token provided' });
-    }
+    res.json({
+      message: 'Hello world!',
+    });
   });
 
   app.use(router);
