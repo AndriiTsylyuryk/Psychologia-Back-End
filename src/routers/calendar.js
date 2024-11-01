@@ -38,7 +38,7 @@ router.post('/event', authenticateUser, async (req, res) => {
       conferenceDataVersion: 1,
       sendNotifications: true,
     });
-    res.status(200).send('Event created');
+    res.status(200).send('Event created', email);
   } catch (error) {
     console.error(error);
     res.status(500).send('Bad request');
