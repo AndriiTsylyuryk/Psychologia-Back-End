@@ -9,6 +9,8 @@ import {
   loginOrSignupWithGoogle,
 } from '../services/auth.js';
 import { generateAuthUrl } from '../utils/googleOAuth2.js';
+import session from 'express-session';
+
 
 export const registerUserController = async (req, res) => {
   const user = await registerUser(req.body);
@@ -21,14 +23,14 @@ export const registerUserController = async (req, res) => {
 };
 
 export const loginUserController = async (req, res) => {
-  const session = await loginUser(req.body);
-
-  res.cookie('refreshToken', session.refreshToken, {
+  const session1 = await loginUser(req.body);
+  req.session.email = req.body.email;
+  res.cookie('refreshToken', session1.refreshToken, {
     httpOnly: true,
     expires: new Date(Date.now() + ONE_DAY),
   });
 
-  res.cookie('sessionId', session._id, {
+  res.cookie('sessionId', session1._id, {
     httpOnly: true,
     expires: new Date(Date.now() + ONE_DAY),
   });
@@ -38,8 +40,7 @@ export const loginUserController = async (req, res) => {
 
     message: 'Successfully logged in an user!',
     data: {
-      accessToken: session.accessToken,
-      email: req.body.email,
+      accessToken: session1.accessToken,
     },
   });
 };

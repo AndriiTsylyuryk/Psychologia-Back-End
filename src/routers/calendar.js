@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { env } from '../utils/env.js';
 import { google } from 'googleapis';
-import { authenticateUser } from '../middlewares/authUser.js';
+;
 
 const router = Router();
 
@@ -19,15 +19,15 @@ const auth = new google.auth.JWT(
 
 const calendar = google.calendar({ version: 'v3', auth });
 
-router.post('/event', authenticateUser, async (req, res) => {
+router.post('/event', async (req, res) => {
   const { start, end, title } = req.body;
-  const email = req.user.email;
+  const userEmail = req.session.email;
   const event = {
     summary: title,
     start: { dateTime: start, timeZone: 'Europe/Kyiv' },
     end: { dateTime: end, timeZone: 'Europe/Kyiv' },
     status: 'tentative',
-    attendees: [{ email }],
+    attendees: [{ email: userEmail }],
   };
 
   try {
@@ -38,7 +38,7 @@ router.post('/event', authenticateUser, async (req, res) => {
       conferenceDataVersion: 1,
       sendNotifications: true,
     });
-    res.status(200).send('Event created', email);
+    res.status(200).send('Event created');
   } catch (error) {
     console.error(error);
     res.status(500).send('Bad request');
