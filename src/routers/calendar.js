@@ -27,7 +27,7 @@ router.post('/event', authenticateUser, async (req, res) => {
     start: { dateTime: start, timeZone: 'Europe/Kyiv' },
     end: { dateTime: end, timeZone: 'Europe/Kyiv' },
     status: 'tentative',
-    email,
+    attendees: [{ email }],
   };
 
   try {
