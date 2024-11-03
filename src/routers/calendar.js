@@ -5,11 +5,11 @@ import path from "path";
 import { env } from "../utils/env.js";
 import { google } from "googleapis";
 
-
+import jwt from 'jsonwebtoken';
 
 const router = Router();
 
-const credentials = env('GOOGLE_CALENDAR_API_KEY');
+// const credentials = env('GOOGLE_CALENDAR_API_KEY');
 const calendarId = env("GOOGLE_CALENDAR_ID");
 const subjectEmail = env('SUBJECT_EMAIL');
 
@@ -25,13 +25,20 @@ const calendar = google.calendar({ version: 'v3', auth });
 
 router.post('/event', async (req, res) => {
   const { start, end, title } = req.body;
-  const userEmail = req.session.email;
+  const token = req.headers.authorization?.split(' ')[1];
+  let email1;
+  try {
+    const decoded = jwt.verify(token, env('JWT_SECRET'));
+    email1 = decoded.email; 
+  } catch (error) {
+    return res.status(401).send("Недійсний токен");
+  }
   const event = {
     summary: title,
     start: { dateTime: start, timeZone: 'Europe/Kyiv' },
     end: { dateTime: end, timeZone: 'Europe/Kyiv' },
     status: 'tentative',
-    attendees: [{ email: userEmail }],
+    description: email1
   };
 
   try {
@@ -44,7 +51,7 @@ router.post('/event', async (req, res) => {
     });
     res.status(200).send("Подія успішно створена!");
   } catch (error) {
-    console.error("Помилка при створенні події:", error);
+    console.error("Помилка при створенні події:", error.response ? error.response.data : error);
     res.status(500).send("Не вдалося створити подію.");
   }
 });

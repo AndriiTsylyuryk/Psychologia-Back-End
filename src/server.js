@@ -31,13 +31,6 @@ export const startServer = () => {
       },
     }),
   );
-  app.use(session({
-    secret: env('SESSION_SECRET'),
-    resave: false,
-    saveUninitialized: true,
-    cookie: { secure: false },
-  }));
-
   
   app.get('/', (req, res) => {
     res.json({

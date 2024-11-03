@@ -17,11 +17,41 @@ export const registerUser = async (payload) => {
 
   const encryptedPassword = await bcrypt.hash(payload.password, 10);
 
-  return await UsersCollection.create({
+  const newUser =  await UsersCollection.create({
     ...payload,
     password: encryptedPassword,
   });
+
+  const accessToken = jwt.sign(
+    { userId: newUser._id, email: newUser.email },
+    env('JWT_SECRET'),
+    { expiresIn: '15m' }
+  );
+  
+  const refreshToken = jwt.sign(
+    { userId: newUser._id, email: newUser.email },
+    env('JWT_SECRET'),
+    { expiresIn: '1d' }
+  );
+
+ 
+  await SessionsCollection.create({
+    userId: newUser._id,
+    email: newUser.email,
+    accessToken,
+    refreshToken,
+    accessTokenValidUntil: new Date(Date.now() + FIFTEEN_MINUTES),
+    refreshTokenValidUntil: new Date(Date.now() + ONE_DAY),
+  });
+
+  return {
+    accessToken,
+    refreshToken,
+  };
+  
 };
+
+
 
 export const loginUser = async (payload) => {
   const user = await UsersCollection.findOne({ email: payload.email });
@@ -33,8 +63,16 @@ export const loginUser = async (payload) => {
 
   await SessionsCollection.deleteOne({ userId: user._id });
 
-  const accessToken = randomBytes(30).toString('base64');
-  const refreshToken = randomBytes(30).toString('base64');
+  const accessToken = jwt.sign(
+    { userId: user._id, email: user.email },
+    env('JWT_SECRET'),
+    { expiresIn: '15m' } 
+  );
+  const refreshToken = jwt.sign(
+    { userId: user._id, email: user.email },
+    env('JWT_SECRET'),
+    { expiresIn: '1d' } 
+  );
 
   return await SessionsCollection.create({
     userId: user._id,
@@ -46,8 +84,26 @@ export const loginUser = async (payload) => {
   });
 };
 
+
+
 export const logoutUser = async (sessionId) => {
   await SessionsCollection.deleteOne({ _id: sessionId });
+};
+
+
+const createTokens = (user) => {
+  const accessToken = jwt.sign(
+    { userId: user._id, email: user.email },
+    process.env.JWT_SECRET,
+    { expiresIn: '15m' }
+  );
+  const refreshToken = jwt.sign(
+    { userId: user._id, email: user.email },
+    process.env.JWT_SECRET,
+    { expiresIn: '1d' }
+  );
+
+  return { accessToken, refreshToken };
 };
 
 const createSession = () => {
@@ -62,29 +118,28 @@ const createSession = () => {
   };
 };
 
-export const refreshUsersSession = async ({ sessionId, refreshToken }) => {
-  const session = await SessionsCollection.findOne({
-    _id: sessionId,
-    refreshToken,
-  });
 
-  if (!session) {
-    throw createHttpError(401, 'Session not found');
+
+
+
+
+export const refreshUsersSession = async (refreshToken) => {
+  try {
+    const decoded = jwt.verify(refreshToken, process.env.JWT_SECRET);
+    const user = await UsersCollection.findById(decoded.userId);
+    
+    if (!user) {
+      throw createHttpError(404, 'User not found');
+    }
+    const { accessToken, refreshToken: newRefreshToken } = createTokens(user);
+
+    return {
+      accessToken,
+      refreshToken: newRefreshToken,
+    };
+  } catch (error) {
+    throw createHttpError(401, 'Invalid refresh token');
   }
-  const isSessionTokenExpired =
-    new Date() > new Date(session.refreshTokenValidUntil);
-
-  if (isSessionTokenExpired) {
-    throw createHttpError(401, 'Session token expired');
-  }
-  const newSession = createSession();
-
-  await SessionsCollection.deleteOne({ _id: sessionId, refreshToken });
-
-  return await SessionsCollection.create({
-    userId: session.userId,
-    ...newSession,
-  });
 };
 
 export const requestResetToken = async (email) => {
