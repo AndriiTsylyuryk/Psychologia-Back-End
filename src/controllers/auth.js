@@ -56,6 +56,8 @@ export const logoutUserController = async (req, res) => {
   res.status(204).send();
 };
 
+
+
 const setupSession = (res, session) => {
   res.cookie('refreshToken', session.refreshToken, {
     httpOnly: true,
@@ -66,6 +68,9 @@ const setupSession = (res, session) => {
     expires: new Date(Date.now() + ONE_DAY),
   });
 };
+
+
+
 
 export const refreshUserSessionController = async (req, res) => {
   const session = await refreshUsersSession({
@@ -114,7 +119,9 @@ export const getGoogleOAuthUrlController = async (req, res) => {
 };
 
 export const loginWithGoogleController = async (req, res) => {
+
   const session = await loginOrSignupWithGoogle(req.body.code);
+
   setupSession(res, session);
 
   res.json({
