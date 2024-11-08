@@ -106,9 +106,9 @@ const createSession = (user) => ({
   refreshTokenValidUntil: new Date(Date.now() + ONE_DAY),
 });
 
-export const refreshUsersSession = async ({refreshToken}) => {
+export const refreshUsersSession = async ({ refreshToken, sessionId }) => {
   try {
-    const decoded = jwt.verify(refreshToken , env('JWT_SECRET'));
+    const decoded = jwt.verify(refreshToken, env('JWT_SECRET'));
     const user = await UsersCollection.findById(decoded.userId);
 
     if (!user) {
@@ -119,6 +119,7 @@ export const refreshUsersSession = async ({refreshToken}) => {
     return {
       accessToken,
       refreshToken: newRefreshToken,
+      sessionId,
     };
   } catch (error) {
     throw createHttpError(401, 'Invalid refresh token');
