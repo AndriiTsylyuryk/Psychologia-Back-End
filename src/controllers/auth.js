@@ -10,6 +10,8 @@ import {
 } from '../services/auth.js';
 import { generateAuthUrl } from '../utils/googleOAuth2.js';
 
+
+
 export const registerUserController = async (req, res) => {
   const user = await registerUser(req.body);
 
@@ -22,7 +24,7 @@ export const registerUserController = async (req, res) => {
 
 export const loginUserController = async (req, res) => {
   const session = await loginUser(req.body);
-
+  
   res.cookie('refreshToken', session.refreshToken, {
     httpOnly: true,
     expires: new Date(Date.now() + ONE_DAY),
@@ -38,7 +40,7 @@ export const loginUserController = async (req, res) => {
 
     message: 'Successfully logged in an user!',
     data: {
-      refreshToken: session.refreshToken,
+      accessToken: session.accessToken,
     },
   });
 };
@@ -54,6 +56,8 @@ export const logoutUserController = async (req, res) => {
   res.status(204).send();
 };
 
+
+
 const setupSession = (res, session) => {
   res.cookie('refreshToken', session.refreshToken, {
     httpOnly: true,
@@ -64,6 +68,9 @@ const setupSession = (res, session) => {
     expires: new Date(Date.now() + ONE_DAY),
   });
 };
+
+
+
 
 export const refreshUserSessionController = async (req, res) => {
   const session = await refreshUsersSession({
@@ -112,6 +119,7 @@ export const getGoogleOAuthUrlController = async (req, res) => {
 };
 
 export const loginWithGoogleController = async (req, res) => {
+
   const session = await loginOrSignupWithGoogle(req.body.code);
 
   setupSession(res, session);
