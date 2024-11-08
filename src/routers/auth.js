@@ -27,6 +27,8 @@ router.post(
   ctrlWrapper(registerUserController),
 );
 
+
+
 router.post(
   '/login',
   validateBody(loginUserSchema),
@@ -35,7 +37,12 @@ router.post(
 
 router.post('/logout', ctrlWrapper(logoutUserController));
 
+
+
 router.post('/refresh', ctrlWrapper(refreshUserSessionController));
+
+
+
 
 router.post(
   '/request-reset-email',
