@@ -100,21 +100,15 @@ const createTokens = (user) => {
   return { accessToken, refreshToken };
 };
 
-
-
-
 const createSession = (user) => ({
   ...createTokens(user),
   accessTokenValidUntil: new Date(Date.now() + FIFTEEN_MINUTES),
   refreshTokenValidUntil: new Date(Date.now() + ONE_DAY),
 });
 
-
-
-
-export const refreshUsersSession = async (refreshToken) => {
+export const refreshUsersSession = async ({refreshToken}) => {
   try {
-    const decoded = jwt.verify(refreshToken, process.env.JWT_SECRET);
+    const decoded = jwt.verify(refreshToken , env('JWT_SECRET'));
     const user = await UsersCollection.findById(decoded.userId);
 
     if (!user) {
