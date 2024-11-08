@@ -120,11 +120,11 @@ export const refreshUsersSession = async (refreshToken) => {
     if (!user) {
       throw createHttpError(404, 'User not found');
     }
-    const { accessToken, refreshToken: newRefreshToken } = createTokens(user);
+    const { accessToken, refreshToken } = createTokens(user);
 
     return {
       accessToken,
-      refreshToken: newRefreshToken,
+      refreshToken,
     };
   } catch (error) {
     throw createHttpError(401, 'Invalid refresh token');
