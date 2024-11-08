@@ -38,7 +38,7 @@ export const loginUserController = async (req, res) => {
 
     message: 'Successfully logged in an user!',
     data: {
-      accessToken: session.refreshToken,
+      refreshToken: session.refreshToken,
     },
   });
 };
