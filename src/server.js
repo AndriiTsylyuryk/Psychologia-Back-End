@@ -9,8 +9,6 @@ import { errorHandler } from './middlewares/errorHandler.js';
 import cookieParser from 'cookie-parser';
 import session from 'express-session';
 
-
-
 dotenv.config();
 
 const PORT = Number(env('PORT', '3000'));
@@ -20,7 +18,12 @@ export const startServer = () => {
 
   app.use(express.json());
 
-  app.use(cors());
+  app.use(
+    cors({
+      origin: 'https://psychologia-eight.vercel.app',
+      credentials: true,
+    }),
+  );
 
   app.use(cookieParser());
 
@@ -31,7 +34,7 @@ export const startServer = () => {
       },
     }),
   );
-  
+
   app.get('/', (req, res) => {
     res.json({
       message: 'Hello world!',

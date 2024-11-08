@@ -13,6 +13,7 @@ import { generateAuthUrl } from '../utils/googleOAuth2.js';
 
 
 export const registerUserController = async (req, res) => {
+
   const user = await registerUser(req.body);
 
   res.status(201).json({
@@ -27,6 +28,7 @@ export const loginUserController = async (req, res) => {
   
   res.cookie('refreshToken', session.refreshToken, {
     httpOnly: true,
+    
     expires: new Date(Date.now() + ONE_DAY),
   });
 
@@ -73,7 +75,7 @@ const setupSession = (res, session) => {
 
 
 export const refreshUserSessionController = async (req, res) => {
-  
+
   const session = await refreshUsersSession({
     sessionId: req.cookies.sessionId,
     refreshToken: req.cookies.refreshToken,
