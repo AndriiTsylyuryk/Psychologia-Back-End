@@ -52,8 +52,9 @@ router.post('/event', async (req, res) => {
       conferenceDataVersion: 1,
       sendNotifications: true,
     });
+
     sendEmail({
-      form: env(SMTP.SMTP_FROM),
+      from: env(SMTP.SMTP_FROM),
       to: email1,
       subject: 'Реєстрація на зустріч з Психологом',
       html: 'Вітаю ви успішно зареєструвалися на зустріч',
