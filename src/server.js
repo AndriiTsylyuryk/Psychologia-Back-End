@@ -7,7 +7,8 @@ import router from './routers/index.js';
 import { notFoundHandler } from './middlewares/notFoundHandler.js';
 import { errorHandler } from './middlewares/errorHandler.js';
 import cookieParser from 'cookie-parser';
-
+import { refreshUsersSession } from './services/auth.js';
+import { setupSession } from './controllers/auth.js';
 
 dotenv.config();
 
@@ -35,7 +36,22 @@ export const startServer = () => {
     }),
   );
 
-  app.get('/', (req, res) => {
+  app.get('/', async (req, res) => {
+    if (req.cookies.sessionId && req.cookies.refreshToken) {
+      const session = await refreshUsersSession({
+        sessionId: req.cookies.sessionId,
+        refreshToken: req.cookies.refreshToken,
+      });
+      setupSession(res, session);
+      return res.json({
+        status: 200,
+        message: 'Successfully refreshed a session!',
+        data: {
+          accessToken: session.accessToken,
+        },
+      });
+    }
+
     res.json({
       message: 'Hello world!',
     });
