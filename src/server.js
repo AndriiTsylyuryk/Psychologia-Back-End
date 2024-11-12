@@ -7,7 +7,7 @@ import router from './routers/index.js';
 import { notFoundHandler } from './middlewares/notFoundHandler.js';
 import { errorHandler } from './middlewares/errorHandler.js';
 import cookieParser from 'cookie-parser';
-import session from 'express-session';
+
 
 dotenv.config();
 
