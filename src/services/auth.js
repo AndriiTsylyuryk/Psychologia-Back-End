@@ -102,7 +102,7 @@ const createTokens = (user) => {
 
 const createSession = (user) => ({
   ...createTokens(user),
-  
+
   accessTokenValidUntil: new Date(Date.now() + FIFTEEN_MINUTES),
   refreshTokenValidUntil: new Date(Date.now() + ONE_DAY),
 });
@@ -197,11 +197,11 @@ export const loginOrSignupWithGoogle = async (code) => {
   }
   await SessionsCollection.deleteOne({ userId: user._id });
 
-  const newSession = createSession(user);
-
-  return await SessionsCollection.create({
+  const newSession = await SessionsCollection.create({
     userId: user._id,
     email: user.email,
-    ...newSession,
+    ...createSession(user),
   });
+
+  return newSession;
 };
