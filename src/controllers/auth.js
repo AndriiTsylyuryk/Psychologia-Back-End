@@ -74,7 +74,7 @@ export const setupSession = (res, session) => {
   res.cookie('sessionId', session.id, {
     httpOnly: true,
     secure: true,
-    // sameSite: 'None',
+    sameSite: 'None',
 
     // secure: false,
     expires: new Date(Date.now() + ONE_DAY),
