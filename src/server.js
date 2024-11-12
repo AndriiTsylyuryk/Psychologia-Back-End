@@ -35,6 +35,7 @@ export const startServer = () => {
 
   app.get('/', async (req, res) => {
     if (req.cookies.sessionId && req.cookies.refreshToken) {
+      
       const session = await refreshUsersSession({
         sessionId: req.cookies.sessionId,
         refreshToken: req.cookies.refreshToken,
