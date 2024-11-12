@@ -63,14 +63,14 @@ const setupSession = (res, session) => {
   res.cookie('refreshToken', session.refreshToken, {
     httpOnly: true,
     secure: true,
-    sameSite: 'Lax',
+    // sameSite: 'Lax',
     // secure: false,
     expires: new Date(Date.now() + ONE_DAY),
   });
   res.cookie('sessionId', session.sessionId, {
     httpOnly: true,
     secure: true,
-    sameSite: 'Lax',
+    // sameSite: 'Lax',
     // secure: false,
     expires: new Date(Date.now() + ONE_DAY),
   });
