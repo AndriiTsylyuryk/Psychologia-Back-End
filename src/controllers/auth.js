@@ -27,6 +27,8 @@ export const loginUserController = async (req, res) => {
     httpOnly: true,
     secure: true,
     // sameSite: 'Lax',
+    sameSite: 'None',
+
     // secure: false,
     expires: new Date(Date.now() + ONE_DAY),
   });
@@ -34,6 +36,8 @@ export const loginUserController = async (req, res) => {
   res.cookie('sessionId', session._id, {
     httpOnly: true,
     secure: true,
+    sameSite: 'None',
+
     // sameSite: 'Lax',
     // secure: false,
     expires: new Date(Date.now() + ONE_DAY),
@@ -63,19 +67,19 @@ const setupSession = (res, session) => {
   res.cookie('refreshToken', session.refreshToken, {
     httpOnly: true,
     secure: true,
-    // sameSite: 'Lax',
+    sameSite: 'None',
     // secure: false,
     expires: new Date(Date.now() + ONE_DAY),
   });
   res.cookie('sessionId', session.sessionId, {
     httpOnly: true,
     secure: true,
-    // sameSite: 'Lax',
+    sameSite: 'None',
+
     // secure: false,
     expires: new Date(Date.now() + ONE_DAY),
   });
 };
-
 
 export const refreshUserSessionController = async (req, res) => {
   const session = await refreshUsersSession({
@@ -93,9 +97,6 @@ export const refreshUserSessionController = async (req, res) => {
     },
   });
 };
-
-
-
 
 export const requestResetEmailController = async (req, res) => {
   await requestResetToken(req.body.email);
