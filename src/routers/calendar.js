@@ -57,7 +57,7 @@ router.post('/event', async (req, res) => {
       from: env(SMTP.SMTP_FROM),
       to: email1,
       subject: 'Реєстрація на зустріч з Психологом',
-      html: 'Вітаю ви успішно зареєструвалися на зустріч',
+      html: `Вітаю ви успішно зареєструвалися на зустріч. Початок о ${start} і до ${end}. Буду чекати!  ,`
     });
     res.status(200).send('Подія успішно створена!');
   } catch (error) {
