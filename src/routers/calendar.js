@@ -54,13 +54,13 @@ router.post('/event', async (req, res) => {
       sendNotifications: true,
     });
 
-    // sendEmail({
-    //   from: env(SMTP.SMTP_FROM),
-    //   to: email1,
-    //   subject: 'Реєстрація на зустріч з Психологом',
-    //   html: `Вітаю! Ви успішно зареєструвалися на зустріч.
-    //   Початок о ${start} і до ${end}. Буду чекати!`,
-    // });
+    sendEmail({
+      from: env(SMTP.SMTP_FROM),
+      to: email1,
+      subject: 'Реєстрація на зустріч з Психологом',
+      html: `Вітаю! Ви успішно зареєструвалися на зустріч.
+      Початок о ${start} і до ${end}. Буду чекати!`,
+    });
     res.status(200).send('Подія успішно створена!');
   } catch (error) {
     console.error(
