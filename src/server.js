@@ -22,7 +22,7 @@ export const startServer = () => {
   app.use(
     cors({ origin: 'https://psychologia-eight.vercel.app', credentials: true }),
   );
-  
+
   app.use(cookieParser());
 
   app.use(
@@ -35,7 +35,6 @@ export const startServer = () => {
 
   app.get('/', async (req, res) => {
     if (req.cookies.sessionId && req.cookies.refreshToken) {
-      
       const session = await refreshUsersSession({
         sessionId: req.cookies.sessionId,
         refreshToken: req.cookies.refreshToken,
