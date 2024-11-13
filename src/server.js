@@ -22,7 +22,7 @@ export const startServer = () => {
   app.use(
     cors({ origin: 'https://psychologia-eight.vercel.app', credentials: true }),
   );
-
+  
   app.use(cookieParser());
 
   app.use(
