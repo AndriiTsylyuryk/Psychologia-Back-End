@@ -25,17 +25,26 @@ export const loginUserController = async (req, res) => {
 
   res.cookie('refreshToken', session.refreshToken, {
     httpOnly: true,
+    secure: true,
+    sameSite: 'Lax',
+    // sameSite: 'None',
+
+    // secure: false,
     expires: new Date(Date.now() + ONE_DAY),
   });
 
   res.cookie('sessionId', session._id, {
     httpOnly: true,
+    secure: true,
+    sameSite: 'None',
+
+    // sameSite: 'Lax',
+    // secure: false,
     expires: new Date(Date.now() + ONE_DAY),
   });
 
   res.json({
     status: 200,
-
     message: 'Successfully logged in an user!',
     data: {
       accessToken: session.accessToken,
@@ -54,13 +63,20 @@ export const logoutUserController = async (req, res) => {
   res.status(204).send();
 };
 
-const setupSession = (res, session) => {
+export const setupSession = (res, session) => {
   res.cookie('refreshToken', session.refreshToken, {
     httpOnly: true,
+    secure: true,
+    sameSite: 'None',
+    // secure: false,
     expires: new Date(Date.now() + ONE_DAY),
   });
-  res.cookie('sessionId', session._id, {
+  res.cookie('sessionId', session.id, {
     httpOnly: true,
+    secure: true,
+    sameSite: 'None',
+
+    // secure: false,
     expires: new Date(Date.now() + ONE_DAY),
   });
 };
@@ -112,8 +128,11 @@ export const getGoogleOAuthUrlController = async (req, res) => {
 };
 
 export const loginWithGoogleController = async (req, res) => {
+  
   const session = await loginOrSignupWithGoogle(req.body.code);
+
   setupSession(res, session);
+  
 
   res.json({
     status: 200,

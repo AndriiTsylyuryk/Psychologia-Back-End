@@ -7,8 +7,10 @@ import { FIFTEEN_MINUTES, ONE_DAY, SMTP } from '../constants/index.js';
 import { env } from '../utils/env.js';
 import { sendEmail } from '../utils/sendMail.js';
 import jwt from 'jsonwebtoken';
-import { getFullNameFromGoogleTokenPayload, validateCode } from '../utils/googleOAuth2.js';
-
+import {
+  getFullNameFromGoogleTokenPayload,
+  validateCode,
+} from '../utils/googleOAuth2.js';
 
 export const registerUser = async (payload) => {
   const user = await UsersCollection.findOne({ email: payload.email });
@@ -17,7 +19,7 @@ export const registerUser = async (payload) => {
 
   const encryptedPassword = await bcrypt.hash(payload.password, 10);
 
-  const newUser =  await UsersCollection.create({
+  const newUser = await UsersCollection.create({
     ...payload,
     password: encryptedPassword,
   });
@@ -25,16 +27,15 @@ export const registerUser = async (payload) => {
   const accessToken = jwt.sign(
     { userId: newUser._id, email: newUser.email },
     env('JWT_SECRET'),
-    { expiresIn: '15m' }
+    { expiresIn: '15m' },
   );
-  
+
   const refreshToken = jwt.sign(
     { userId: newUser._id, email: newUser.email },
     env('JWT_SECRET'),
-    { expiresIn: '1d' }
+    { expiresIn: '1d' },
   );
 
- 
   await SessionsCollection.create({
     userId: newUser._id,
     email: newUser.email,
@@ -48,10 +49,7 @@ export const registerUser = async (payload) => {
     accessToken,
     refreshToken,
   };
-  
 };
-
-
 
 export const loginUser = async (payload) => {
   const user = await UsersCollection.findOne({ email: payload.email });
@@ -66,12 +64,12 @@ export const loginUser = async (payload) => {
   const accessToken = jwt.sign(
     { userId: user._id, email: user.email },
     env('JWT_SECRET'),
-    { expiresIn: '15m' } 
+    { expiresIn: '15m' },
   );
   const refreshToken = jwt.sign(
     { userId: user._id, email: user.email },
     env('JWT_SECRET'),
-    { expiresIn: '1d' } 
+    { expiresIn: '1d' },
   );
 
   return await SessionsCollection.create({
@@ -84,50 +82,36 @@ export const loginUser = async (payload) => {
   });
 };
 
-
-
 export const logoutUser = async (sessionId) => {
   await SessionsCollection.deleteOne({ _id: sessionId });
 };
 
-
 const createTokens = (user) => {
   const accessToken = jwt.sign(
     { userId: user._id, email: user.email },
-    process.env.JWT_SECRET,
-    { expiresIn: '15m' }
+    env('JWT_SECRET'),
+    { expiresIn: '15m' },
   );
   const refreshToken = jwt.sign(
     { userId: user._id, email: user.email },
-    process.env.JWT_SECRET,
-    { expiresIn: '1d' }
+    env('JWT_SECRET'),
+    { expiresIn: '1d' },
   );
-
   return { accessToken, refreshToken };
 };
 
-const createSession = () => {
-  const accessToken = randomBytes(30).toString('base64');
-  const refreshToken = randomBytes(30).toString('base64');
+const createSession = (user) => ({
+  ...createTokens(user),
 
-  return {
-    accessToken,
-    refreshToken,
-    accessTokenValidUntil: new Date(Date.now() + FIFTEEN_MINUTES),
-    refreshTokenValidUntil: new Date(Date.now() + ONE_DAY),
-  };
-};
+  accessTokenValidUntil: new Date(Date.now() + FIFTEEN_MINUTES),
+  refreshTokenValidUntil: new Date(Date.now() + ONE_DAY),
+});
 
-
-
-
-
-
-export const refreshUsersSession = async (refreshToken) => {
+export const refreshUsersSession = async ({ refreshToken, sessionId }) => {
   try {
-    const decoded = jwt.verify(refreshToken, process.env.JWT_SECRET);
+    const decoded = jwt.verify(refreshToken, env('JWT_SECRET'));
     const user = await UsersCollection.findById(decoded.userId);
-    
+
     if (!user) {
       throw createHttpError(404, 'User not found');
     }
@@ -136,6 +120,7 @@ export const refreshUsersSession = async (refreshToken) => {
     return {
       accessToken,
       refreshToken: newRefreshToken,
+      sessionId,
     };
   } catch (error) {
     throw createHttpError(401, 'Invalid refresh token');
@@ -168,7 +153,6 @@ export const requestResetToken = async (email) => {
   });
 };
 
-
 export const resetPassword = async (payload) => {
   let entries;
 
@@ -196,14 +180,14 @@ export const resetPassword = async (payload) => {
   );
 };
 
-
-
 export const loginOrSignupWithGoogle = async (code) => {
   const loginTicket = await validateCode(code);
   const payload = loginTicket.getPayload();
+
   if (!payload) throw createHttpError(401);
 
   let user = await UsersCollection.findOne({ email: payload.email });
+
   if (!user) {
     const password = await bcrypt.hash(randomBytes(10), 10);
     user = await UsersCollection.create({
@@ -212,11 +196,13 @@ export const loginOrSignupWithGoogle = async (code) => {
       password,
     });
   }
+  await SessionsCollection.deleteOne({ userId: user.id });
 
-  const newSession = createSession();
-
-  return await SessionsCollection.create({
+  const newSession = await SessionsCollection.create({
     userId: user._id,
-    ...newSession,
+    email: user.email,
+    ...createSession(user),
   });
+
+  return newSession;
 };
