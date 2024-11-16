@@ -8,6 +8,8 @@ import { notFoundHandler } from './middlewares/notFoundHandler.js';
 import { errorHandler } from './middlewares/errorHandler.js';
 import cookieParser from 'cookie-parser';
 import session from 'express-session';
+import { refreshUsersSession } from './services/auth.js';
+import { setupSession } from './controllers/auth.js';
 
 
 
