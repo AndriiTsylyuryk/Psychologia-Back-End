@@ -34,15 +34,14 @@ router.post('/event', async (req, res) => {
     const decoded = jwt.verify(token, env('JWT_SECRET'));
     email1 = decoded.email;
   } catch (error) {
-    return res.status(401).send('Недійсний токен');
+    return res.status(401).send('Invalid token');
   }
   const event = {
     summary: title,
     start: { dateTime: start, timeZone: 'Europe/Kyiv' },
     end: { dateTime: end, timeZone: 'Europe/Kyiv' },
-    
+
     description: email1,
-    
   };
 
   try {
@@ -61,13 +60,16 @@ router.post('/event', async (req, res) => {
       html: `Вітаю! Ви успішно зареєструвалися на зустріч.
       Початок о ${start} і до ${end}. Буду чекати!`,
     });
+    sendEmail({
+      from: env(SMTP.SMTP_FROM),
+      to: env(SMTP.SMTP_FROM),
+      subject: 'УВАГА! Новий запис клієнта',
+      html: `Новий запис на зустріч створив клієнт ${email1}`,
+    });
     res.status(200).send('Подія успішно створена!');
   } catch (error) {
-    console.error(
-      'Помилка при створенні події:',
-      error.response ? error.response.data : error,
-    );
-    res.status(500).send('Не вдалося створити подію.');
+    console.error('Error:', error.response ? error.response.data : error);
+    res.status(500).send('Unable to create event');
   }
 });
 
