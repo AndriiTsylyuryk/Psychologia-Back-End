@@ -11,8 +11,6 @@ import session from 'express-session';
 import { refreshUsersSession } from './services/auth.js';
 import { setupSession } from './controllers/auth.js';
 
-
-
 dotenv.config();
 
 const PORT = Number(env('PORT', '3000'));
@@ -23,7 +21,11 @@ export const startServer = () => {
   app.use(express.json());
 
   app.use(
-    cors({ origin: 'https://psychologia-eight.vercel.app', credentials: true }),
+    cors({
+      origin: 'https://psychologia-eight.vercel.app',
+      methods: ['GET', 'POST', 'PUT', 'DELETE'],
+      credentials: true,
+    }),
   );
 
   app.use(cookieParser());
