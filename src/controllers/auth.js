@@ -33,7 +33,7 @@ export const loginUserController = async (req, res) => {
     expires: new Date(Date.now() + ONE_DAY),
   });
 
-  res.cookie('sessionId', session._id, {
+  res.cookie('sessionId', session.id, {
     httpOnly: true,
     secure: true,
     sameSite: 'None',
@@ -45,7 +45,8 @@ export const loginUserController = async (req, res) => {
 
   res.json({
     status: 200,
-    message: 'Successfully logged in an user!',
+    message: `Successfully logged in an user!`,
+
     data: {
       accessToken: session.accessToken,
     },
@@ -72,7 +73,7 @@ export const setupSession = (res, session) => {
     // secure: false,
     expires: new Date(Date.now() + ONE_DAY),
   });
-  res.cookie('sessionId', session._id, {
+  res.cookie('sessionId', session.sessionId, {
     httpOnly: true,
     secure: true,
     sameSite: 'None',
