@@ -25,20 +25,20 @@ export const loginUserController = async (req, res) => {
 
   res.cookie('refreshToken', session.refreshToken, {
     httpOnly: true,
-    // secure: true,
-    sameSite: 'Lax',
-    // sameSite: 'None',
+    secure: true,
+    // sameSite: 'Lax',
+    sameSite: 'None',
 
-    secure: false,
+    // secure: false,
     expires: new Date(Date.now() + ONE_DAY),
   });
 
   res.cookie('sessionId', session._id, {
     httpOnly: true,
     secure: true,
-    // sameSite: 'None',
+    sameSite: 'None',
 
-    sameSite: 'Lax',
+    // sameSite: 'Lax',8
     // secure: false,
     expires: new Date(Date.now() + ONE_DAY),
   });
@@ -67,16 +67,16 @@ export const setupSession = (res, session) => {
   res.cookie('refreshToken', session.refreshToken, {
     httpOnly: true,
     secure: true,
-    // sameSite: 'None',
-    sameSite: 'Lax',
+    sameSite: 'None',
+    // sameSite: 'Lax',
     // secure: false,
     expires: new Date(Date.now() + ONE_DAY),
   });
   res.cookie('sessionId', session._id, {
     httpOnly: true,
     secure: true,
-    // sameSite: 'None',
-    sameSite: 'Lax',
+    sameSite: 'None',
+    // sameSite: 'Lax',
     // secure: false,
     expires: new Date(Date.now() + ONE_DAY),
   });
