@@ -7,6 +7,7 @@ import router from './routers/index.js';
 import { notFoundHandler } from './middlewares/notFoundHandler.js';
 import { errorHandler } from './middlewares/errorHandler.js';
 import cookieParser from 'cookie-parser';
+import session from 'express-session';
 import { refreshUsersSession } from './services/auth.js';
 import { setupSession } from './controllers/auth.js';
 
@@ -20,7 +21,11 @@ export const startServer = () => {
   app.use(express.json());
 
   app.use(
-    cors({ origin: 'https://psychologia-eight.vercel.app', credentials: true }),
+    cors({
+      origin: 'https://psychologia-eight.vercel.app',
+      methods: ['GET', 'POST', 'PUT', 'DELETE'],
+      credentials: true,
+    }),
   );
 
   app.use(cookieParser());

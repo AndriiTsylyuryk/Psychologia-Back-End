@@ -143,12 +143,13 @@ export const requestResetToken = async (email) => {
       expiresIn: '15m',
     },
   );
+  const resetLink = `${env('FRONTEND_URL')}reset-password?token=${encodeURIComponent(resetToken)}`;
 
   await sendEmail({
     from: env(SMTP.SMTP_FROM),
     to: email,
     subject: 'Скид паролю',
-    html: `<p>Натисніть <a href="${resetToken}">сюди</a> щоб скинути пароль!</p>`,
+    html: `<p>Натисніть <a href="${resetLink}">сюди</a> щоб скинути пароль!</p>`,
   });
 };
 
