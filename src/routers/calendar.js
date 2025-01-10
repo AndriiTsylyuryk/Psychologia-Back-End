@@ -11,7 +11,6 @@ import { SMTP } from '../constants/index.js';
 
 const router = Router();
 
-// const credentials = env('GOOGLE_CALENDAR_API_KEY');
 const calendarId = env('GOOGLE_CALENDAR_ID');
 const subjectEmail = env('SUBJECT_EMAIL');
 
