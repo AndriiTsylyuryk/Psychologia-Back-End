@@ -132,7 +132,25 @@ export const getGoogleOAuthUrlController = async (req, res) => {
 export const loginWithGoogleController = async (req, res) => {
   const session = await loginOrSignupWithGoogle(req.body.code);
 
-  setupSession(res, session);
+  res.cookie('refreshToken', session.refreshToken, {
+    httpOnly: true,
+    secure: true,
+    // sameSite: 'Lax',
+    sameSite: 'None',
+
+    // secure: false,
+    expires: new Date(Date.now() + ONE_DAY),
+  });
+
+  res.cookie('sessionId', session.id, {
+    httpOnly: true,
+    secure: true,
+    sameSite: 'None',
+
+    // sameSite: 'Lax',8
+    // secure: false,
+    expires: new Date(Date.now() + ONE_DAY),
+  });
 
   res.json({
     status: 200,
